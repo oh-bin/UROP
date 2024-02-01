@@ -1,5 +1,5 @@
 ////////////////////////////////////////
-//CPA ¼öÇà ÄÚµå
+//CPA ìˆ˜í–‰ ì½”ë“œ
 ////////////////////////////////////////
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -8,25 +8,25 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define TraceNumber 5000 // ÃÑ ÆÄÇü °¹ ¼ö
-#define PointNumber 4376 // ÃÑ Æ÷ÀÎÆ® °¹ ¼ö
-#define PlaintextLength 16 // Æò¹®±æÀÌ
-// ºĞ¼® ±¸°£ ¼³Á¤
+#define TraceNumber 5000 // ì´ íŒŒí˜• ê°¯ ìˆ˜
+#define PointNumber 4376 // ì´ í¬ì¸íŠ¸ ê°¯ ìˆ˜
+#define PlaintextLength 16 // í‰ë¬¸ê¸¸ì´
+// ë¶„ì„ êµ¬ê°„ ì„¤ì •
 #define TargetPointerlow 850 
 #define TargetPointerhigh 2000
-// ÆÄÇü °³ÇüÀ» º¸±â À§ÇØ ÀúÀåÇÏ´Â ÆÄÀÏ
+// íŒŒí˜• ê°œí˜•ì„ ë³´ê¸° ìœ„í•´ ì €ì¥í•˜ëŠ” íŒŒì¼
 #define FirstTrace ""
-// ÆÄÇü ¼öÁı ½Ã ÀúÀåµÇ´Â ÆÄÀÏ(.trace)
+// íŒŒí˜• ìˆ˜ì§‘ ì‹œ ì €ì¥ë˜ëŠ” íŒŒì¼(.trace)
 #define Tracefile ""
-// Æò¹® ÆÄÀÏ
+// í‰ë¬¸ íŒŒì¼
 #define Plaintextfile ""
-// CPA ¼öÇà ½Ã °á°ú¿¡ ´ëÇÑ ÆÄÀÏ
+// CPA ìˆ˜í–‰ ì‹œ ê²°ê³¼ì— ëŒ€í•œ íŒŒì¼
 #define Saveresultfile ""
 
-//1¹ÙÀÌÆ®
+//1ë°”ì´íŠ¸
 typedef unsigned char BYTE;
 
-//CPA¸¦ ÅëÇÑ Å°¸¦ ÀúÀåÇÏ´Â ±¸Á¶Ã¼
+//CPAë¥¼ í†µí•œ í‚¤ë¥¼ ì €ì¥í•˜ëŠ” êµ¬ì¡°ì²´
 typedef struct bestkey {
     BYTE key;
     int pointnumber;
@@ -73,7 +73,7 @@ const BYTE HM_SBox[256] = {
     3, 3, 3, 3, 7, 5, 2, 3, 2, 4, 4, 4, 3, 3, 6, 3
 };
 
-//HammingWeight °ªÀ» ¹İÈ¯
+//HammingWeight ê°’ì„ ë°˜í™˜
 int return_HammingWeight(BYTE input)
 {
     int HW = 0;
@@ -84,7 +84,7 @@ int return_HammingWeight(BYTE input)
     return HW;
 }
 
-//±¸ÇöÀÇ ÃÖÀûÈ­¸¦ À§ÇÏ¿© Hammingweight Sbox¸¦ ¸¸µå´Â ÇÔ¼ö
+//êµ¬í˜„ì˜ ìµœì í™”ë¥¼ ìœ„í•˜ì—¬ Hammingweight Sboxë¥¼ ë§Œë“œëŠ” í•¨ìˆ˜
 void makeHammingweight_Table()
 {
     for (int i = 0; i < 256; i++)
@@ -97,7 +97,7 @@ void makeHammingweight_Table()
     }
 }
 
-//±×·¡ÇÁ ÆÄÇü º¼ ¼ö ÀÖ°Ô ÆÄÇü Áß 1°³ÀÇ °á°ú¸¸ ÀúÀå
+//ê·¸ë˜í”„ íŒŒí˜• ë³¼ ìˆ˜ ìˆê²Œ íŒŒí˜• ì¤‘ 1ê°œì˜ ê²°ê³¼ë§Œ ì €ì¥
 void tracefile_to_textfile()
 {
     FILE* fpInput = fopen(Tracefile, "rb");
@@ -123,7 +123,7 @@ void tracefile_to_textfile()
     fclose(fpOutput);
 }
 
-//CPA ¼öÇà
+//CPA ìˆ˜í–‰
 void CPA()
 {
     FILE* PlaintextFile = fopen(Plaintextfile, "rt");
@@ -138,8 +138,8 @@ void CPA()
 
     BYTE** plaintextbuf = NULL;
     float** tracebuf = NULL;
-    plaintextbuf = (BYTE**)calloc(TraceNumber, sizeof(BYTE*)); //plaintextbuf[Æò¹® ¼ö][Æò¹®¹ÙÀÌÆ® ¼ö]
-    tracebuf = (float**)calloc(TraceNumber, sizeof(float*)); //tracebuf[ÆÄÇü ¼ö][Æ÷ÀÎÆ® ¼ö]
+    plaintextbuf = (BYTE**)calloc(TraceNumber, sizeof(BYTE*)); //plaintextbuf[í‰ë¬¸ ìˆ˜][í‰ë¬¸ë°”ì´íŠ¸ ìˆ˜]
+    tracebuf = (float**)calloc(TraceNumber, sizeof(float*)); //tracebuf[íŒŒí˜• ìˆ˜][í¬ì¸íŠ¸ ìˆ˜]
     for (int i = 0; i < TraceNumber; i++)
     {
         plaintextbuf[i] = (BYTE*)calloc(PlaintextLength, sizeof(BYTE));
@@ -198,10 +198,13 @@ void CPA()
                     }
                     KEY[bytelocate].Largest_correlation = correlation_buf;
                     KEY[bytelocate].key = keycandidate;
-                    KEY[bytelocate].pointnumber = point + 1;
-                    
+                    KEY[bytelocate].pointnumber = point + 1;    
                 }
-                buf[bytelocate][0] = 0;
+		else if ((fabs(correlation_buf) > fabs(KEY[bytelocate].Sec_largest_correlation)) && KEY[bytelocate].key != keycandidate)
+		{
+			KEY[bytelocate].Sec_largest_correlation = correlation_buf;
+		}	
+		buf[bytelocate][0] = 0;
                 buf[bytelocate][1] = 0;
                 buf[bytelocate][2] = 0;
                 buf[bytelocate][3] = 0;
@@ -211,15 +214,15 @@ void CPA()
         printf("%d\n", point + 1);
     }
 
-    printf("ÃÖÁ¾ Å° Á¤º¸\n");
-    fprintf(resultFile, "ÃÖÁ¾ Å° Á¤º¸\n");
+    printf("ìµœì¢… í‚¤ ì •ë³´\n");
+    fprintf(resultFile, "ìµœì¢… í‚¤ ì •ë³´\n");
     for (int i = 0; i < PlaintextLength; i++)
     {
-        printf("[%d¹øÂ° ¹ÙÀÌÆ®]\n", i + 1);
-        printf("Å°: %02x, ÇØ´ç Æ÷ÀÎÆ®: %d, »ó°ü°è¼ö: %.10f, Ratio: %.10f\n", KEY[i].key, KEY[i].pointnumber, fabs(KEY[i].Largest_correlation), 
+        printf("[%dë²ˆì§¸ ë°”ì´íŠ¸]\n", i + 1);
+        printf("í‚¤: %02x, í•´ë‹¹ í¬ì¸íŠ¸: %d, ìƒê´€ê³„ìˆ˜: %.10f, Ratio: %.10f\n", KEY[i].key, KEY[i].pointnumber, fabs(KEY[i].Largest_correlation), 
                                                                     fabs(KEY[i].Largest_correlation / KEY[i].Sec_largest_correlation));
-        fprintf(resultFile, "[%d¹øÂ° ¹ÙÀÌÆ®]\n", i + 1);
-        fprintf(resultFile, "Å°: %02x, ÇØ´ç Æ÷ÀÎÆ®: %d, »ó°ü°è¼ö: %.10f, Ratio: %.10f\n", KEY[i].key, KEY[i].pointnumber, fabs(KEY[i].Largest_correlation),
+        fprintf(resultFile, "[%dë²ˆì§¸ ë°”ì´íŠ¸]\n", i + 1);
+        fprintf(resultFile, "í‚¤: %02x, í•´ë‹¹ í¬ì¸íŠ¸: %d, ìƒê´€ê³„ìˆ˜: %.10f, Ratio: %.10f\n", KEY[i].key, KEY[i].pointnumber, fabs(KEY[i].Largest_correlation),
                                                                                 fabs(KEY[i].Largest_correlation / KEY[i].Sec_largest_correlation));
     }
     free(plaintextbuf);
